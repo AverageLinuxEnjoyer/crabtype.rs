@@ -1,0 +1,11 @@
+& {
+    height: 100%;
+    width: auto;
+    background-color: rgb(31, 31, 31);
+    font-size: 2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}

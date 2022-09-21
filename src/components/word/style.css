@@ -1,0 +1,13 @@
+&.current {
+    text-decoration-color: rgb(205, 205, 225);
+}
+
+&.incorrect :not(:last-child) {
+    text-decoration: underline;
+    text-decoration-thickness: 0.2ch;
+    text-decoration-color: rgb(255, 114, 114);
+}
+
+&.marked {
+    position: relative;
+}

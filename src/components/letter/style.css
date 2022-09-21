@@ -1,0 +1,32 @@
+& {
+    color: rgb(72, 72, 72);
+    font-family: monospace;
+}
+
+&.current {
+    position: relative;
+}
+
+&.correct {
+    color: rgb(205, 205, 225);
+}
+
+&.incorrect {
+    color: rgb(255, 114, 114);
+}
+
+&.extra {
+    color: rgb(255, 168, 91);
+}
+
+&.current::after {
+    content: " ";
+    display: inline-block;
+    background: rgb(215, 215, 235);
+    height: 1.8ch;
+    width: 0.2ch;
+
+    position: absolute;
+    bottom: 0.2ch;
+    right: 1ch;
+}
