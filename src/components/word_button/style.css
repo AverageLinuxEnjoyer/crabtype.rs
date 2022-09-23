@@ -1,0 +1,18 @@
+& {
+    padding: 0;
+    border: none;
+    background: none;
+    color: rgb(72, 72, 72);
+    font-family: monospace;
+    font-size: 1.5em;
+    transition: .2s;
+    margin: 1em;
+}
+
+&:hover {
+    color: rgb(132, 132, 132);
+}
+
+&:active, &.selected {
+    color: white;
+}

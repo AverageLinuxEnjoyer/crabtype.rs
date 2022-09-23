@@ -63,7 +63,7 @@ pub fn typing_container() -> Html {
 
     html! {
         <main class={style}>
-            {duration}
+            //{duration}
             <WordsContainer state={state.clone()} />
             <RestartButton {onclick} />
         </main>
