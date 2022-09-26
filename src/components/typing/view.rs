@@ -1,13 +1,15 @@
 use super::super::restart_button::view::RestartButton;
 use super::super::words_container::view::WordsContainer;
-use crate::components::typing::words_state::{
-    event_listener::use_key_listener_effect,
-    state::{State, StateAction},
-    words_action::WordsAction,
+use crate::{
+    components::typing::event_listener::use_key_listener_effect,
+    global_state::{
+        state::{AppContext, StateAction},
+        words_action::WordsAction,
+    },
 };
 use chrono::prelude::*;
-use gloo::net::http::Request;
-use serde_json::{Result, Value};
+use gloo::{console::log, net::http::Request};
+use serde_json::Value;
 use stylist::{yew::styled_component, Style};
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
@@ -16,15 +18,11 @@ use yew::prelude::*;
 pub fn typing_container() -> Html {
     let style = Style::new(include_str!("style.css")).unwrap();
 
-    let state = State::new_reducer();
-
-    let timer = use_state(|| Local::now());
+    let state = use_context::<AppContext>().expect("No state context found");
 
     let state_clone = state.clone();
-    let timer_clone = timer.clone();
     let onclick = Callback::from(move |_| {
         let state = state_clone.clone();
-        let timer = timer_clone.clone();
         spawn_local(async move {
             let res = Request::post("http://127.0.0.1:3000/words")
                 .body(
@@ -40,11 +38,12 @@ pub fn typing_container() -> Html {
                 .header("Content-Type", "application/json")
                 .send()
                 .await
-                .unwrap()
+                .expect("Error connecting to the server.") // TODO: handle this unwrap
                 .text()
                 .await
-                .unwrap();
+                .unwrap(); // TODO: this one as well
 
+            // TODO: handle these unwraps
             let res: Value = serde_json::from_str(&res).unwrap();
             let v = res.as_array().unwrap();
             let v = v
@@ -53,17 +52,13 @@ pub fn typing_container() -> Html {
                 .collect::<Vec<_>>();
 
             state.dispatch(StateAction::WordsAction(WordsAction::ResetWords(v)));
-            timer.set(Local::now());
         });
     });
 
     use_key_listener_effect(state.clone());
 
-    let duration = Local::now().signed_duration_since(*timer).num_seconds();
-
     html! {
         <main class={style}>
-            //{duration}
             <WordsContainer state={state.clone()} />
             <RestartButton {onclick} />
         </main>

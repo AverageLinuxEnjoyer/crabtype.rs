@@ -1,14 +1,16 @@
-use super::super::typing::words_state::state::State;
-use crate::components::{
-    word::view::WordProps,
-    words_container::{row::Row, rows::Rows},
+use crate::{
+    components::{
+        word::view::WordProps,
+        words_container::{row::Row, rows::Rows},
+    },
+    global_state::state::AppState,
 };
 use stylist::{yew::styled_component, Style};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
 pub struct ContainerProps {
-    pub state: UseReducerHandle<State>,
+    pub state: UseReducerHandle<AppState>,
 }
 
 #[styled_component(WordsContainer)]

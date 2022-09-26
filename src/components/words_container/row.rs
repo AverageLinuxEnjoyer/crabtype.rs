@@ -32,6 +32,8 @@ impl Row for Vec<WordProps> {
     }
 
     fn is_finished(&self) -> bool {
+        // TODO: handle those unwraps
+        // maybe simply return false if they fail?
         let last_word = self.last().unwrap();
         let last_letter = last_word.content.last().unwrap();
 
@@ -41,6 +43,8 @@ impl Row for Vec<WordProps> {
     }
 
     fn first_letter_current(&self) -> bool {
+        // TODO: handle those unwraps
+        // maybe simply return false if they fail?
         let first_word = self.first().unwrap();
         let first_letter = first_word.content.first().unwrap();
 

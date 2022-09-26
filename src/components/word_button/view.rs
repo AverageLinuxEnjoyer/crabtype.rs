@@ -9,7 +9,7 @@ pub struct Props {
 }
 
 #[styled_component(WordButton)]
-pub fn word_button(props: &Props) -> Html  {
+pub fn word_button(props: &Props) -> Html {
     let style = Style::new(include_str!("style.css")).unwrap();
 
     let props_onclick = props.onclick.clone();

@@ -1,22 +1,24 @@
-use super::super::typing::words_state::state::State;
-use crate::components::{
-    letter::class::LetterClass,
-    word::{
-        class::WordClass,
-        view::{Word, WordProps},
+use crate::{
+    components::{
+        letter::class::LetterClass,
+        word::{
+            class::WordClass,
+            view::{Word, WordProps},
+        },
     },
+    global_state::state::AppState,
 };
 use stylist::css;
 use yew::prelude::*;
 
 pub trait Rows {
-    fn from_state(state: &State, start_word_index: usize) -> Vec<Vec<WordProps>>;
-    fn mark_current_classes(&mut self, state: &State, start_word_index: usize);
+    fn from_state(state: &AppState, start_word_index: usize) -> Vec<Vec<WordProps>>;
+    fn mark_current_classes(&mut self, state: &AppState, start_word_index: usize);
     fn to_html(self) -> Html;
 }
 
 impl Rows for Vec<Vec<WordProps>> {
-    fn from_state(state: &State, start_word_index: usize) -> Vec<Vec<WordProps>> {
+    fn from_state(state: &AppState, start_word_index: usize) -> Vec<Vec<WordProps>> {
         let mut letter_count = 0;
         let mut rows: Vec<Vec<WordProps>> = vec![Vec::new()];
         for word in state.words.iter().skip(start_word_index) {
@@ -32,13 +34,15 @@ impl Rows for Vec<Vec<WordProps>> {
             }
 
             letter_count += word.content.len() + 1;
+
+            // guaranteed not to panic, rows has at least 1 elem inside (see line 23) 
             rows.last_mut().unwrap().push(word);
         }
 
         rows
     }
 
-    fn mark_current_classes(&mut self, state: &State, start_word_index: usize) {
+    fn mark_current_classes(&mut self, state: &AppState, start_word_index: usize) {
         let mut word_index = start_word_index;
         'outer: for row in self.iter_mut() {
             for word in row.iter_mut() {
