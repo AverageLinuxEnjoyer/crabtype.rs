@@ -17,7 +17,6 @@ pub fn restart_button(props: &Props) -> Html {
 
     html! {
         <button type={"button"} onclick={button_onclick} class={style}>
-            //<i class={style}></i>
         </button>
     }
 }

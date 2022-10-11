@@ -42,6 +42,7 @@ impl Row for Vec<WordProps> {
             && last_letter.class != LetterClass::ExtraCurrent
     }
 
+    // checks if the first letter of the row has the current class
     fn first_letter_current(&self) -> bool {
         // TODO: handle those unwraps
         // maybe simply return false if they fail?

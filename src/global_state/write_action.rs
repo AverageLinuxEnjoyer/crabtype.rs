@@ -1,3 +1,5 @@
+use gloo::console::log;
+
 use super::state::AppState;
 
 pub enum WriteAction {
@@ -17,7 +19,7 @@ pub fn handle_write_action(action: WriteAction, state: &mut AppState) {
         }
         Backspace => {
             if state.current_letter_index > 0 {
-                state.words[state.current_word_index]
+                state.words.borrow_mut()[state.current_word_index]
                     .written
                     .as_mut()
                     .unwrap()
@@ -25,11 +27,11 @@ pub fn handle_write_action(action: WriteAction, state: &mut AppState) {
 
                 state.current_letter_index -= 1;
             } else if state.current_word_index > 0
-                && !state.words[state.current_word_index - 1].is_correct()
+                && !state.words.borrow()[state.current_word_index - 1].is_correct()
             {
-                state.words[state.current_word_index].written = None;
+                state.words.borrow_mut()[state.current_word_index].written = None;
                 state.current_word_index -= 1;
-                let current = &state.words[state.current_word_index];
+                let current = &state.words.borrow_mut()[state.current_word_index];
 
                 state.current_letter_index = match current.written.as_ref() {
                     None => 0,
@@ -40,11 +42,11 @@ pub fn handle_write_action(action: WriteAction, state: &mut AppState) {
         CtrlBackspace => {
             if state.current_letter_index > 0 {
                 state.current_letter_index = 0;
-                state.words[state.current_word_index].written = None;
+                state.words.borrow_mut()[state.current_word_index].written = None;
             }
         }
         Other(key) => {
-            let current = &mut state.words[state.current_word_index].written;
+            let current = &mut state.words.borrow_mut()[state.current_word_index].written;
 
             match current {
                 None => {

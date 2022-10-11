@@ -1,18 +1,17 @@
 use super::super::restart_button::view::RestartButton;
+use super::super::timer::view::Timer;
 use super::super::words_container::view::WordsContainer;
 use crate::{
     components::typing::event_listener::use_key_listener_effect,
+    fetch::words::fetch_words,
     global_state::{
         state::{AppContext, StateAction},
         words_action::WordsAction,
     },
 };
-use chrono::prelude::*;
-use gloo::{console::log, net::http::Request};
-use serde_json::Value;
 use stylist::{yew::styled_component, Style};
-use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
+use yew_hooks::prelude::*;
 
 #[styled_component(TypingContainer)]
 pub fn typing_container() -> Html {
@@ -20,45 +19,29 @@ pub fn typing_container() -> Html {
 
     let state = use_context::<AppContext>().expect("No state context found");
 
-    let state_clone = state.clone();
+    let fetched_words = use_async(async move { fetch_words("english_1k", true, true).await });
+
+    if fetched_words.loading {
+        state.dispatch(StateAction::WordsAction(WordsAction::SetLoaded(false)));
+    } else if fetched_words.data.is_some() && !state.loaded {
+        state.dispatch(StateAction::WordsAction(WordsAction::ResetWords(
+            fetched_words.data.as_ref().unwrap().clone(),
+        )));
+
+        state.dispatch(StateAction::WordsAction(WordsAction::SetLoaded(true)));
+    }
+
     let onclick = Callback::from(move |_| {
-        let state = state_clone.clone();
-        spawn_local(async move {
-            let res = Request::post("http://127.0.0.1:3000/words")
-                .body(
-                    r#"
-                {
-                    "language":  "english_1k",
-                    "count": 50,
-                    "with_uppercase": true,
-                    "with_punctuation": true
-                }
-                "#,
-                )
-                .header("Content-Type", "application/json")
-                .send()
-                .await
-                .expect("Error connecting to the server.") // TODO: handle this unwrap
-                .text()
-                .await
-                .unwrap(); // TODO: this one as well
-
-            // TODO: handle these unwraps
-            let res: Value = serde_json::from_str(&res).unwrap();
-            let v = res.as_array().unwrap();
-            let v = v
-                .iter()
-                .map(|val| val.as_str().unwrap().to_string())
-                .collect::<Vec<_>>();
-
-            state.dispatch(StateAction::WordsAction(WordsAction::ResetWords(v)));
-        });
+        fetched_words.run();
     });
 
     use_key_listener_effect(state.clone());
 
+    let loaded = if state.loaded { "loaded" } else { "loading" };
+
     html! {
-        <main class={style}>
+        <main class={classes!(style, loaded)}>
+            <Timer />
             <WordsContainer state={state.clone()} />
             <RestartButton {onclick} />
         </main>

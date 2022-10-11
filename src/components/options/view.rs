@@ -16,6 +16,7 @@ pub fn options() -> Html {
 
     let state = use_context::<AppContext>().expect("No state context found");
 
+    // TODO: refactor these implementation
     let language_buttons = get_language_buttons(state.clone());
     let timer_buttons = get_timer_buttons(state.clone());
     let capitalization_button = get_capitalization(state.clone());

@@ -1,5 +1,5 @@
 use super::state::AppState;
-use gloo::timers::callback::Interval;
+use gloo::{console::log, timers::callback::Interval};
 
 pub enum TimerAction {
     DecrementTimer,

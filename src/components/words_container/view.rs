@@ -5,6 +5,7 @@ use crate::{
     },
     global_state::state::AppState,
 };
+use gloo::console::log;
 use stylist::{yew::styled_component, Style};
 use yew::prelude::*;
 
@@ -15,8 +16,11 @@ pub struct ContainerProps {
 
 #[styled_component(WordsContainer)]
 pub fn words_container(props: &ContainerProps) -> Html {
+    // from which word onwards words are displayed
+    // modifies when rows are shifted up
     let start_word_index = use_state(|| 0usize);
 
+    // when words reset, state.current_word_index becomes 0 so we reset the start_word_index as well
     if *start_word_index != 0 && props.state.current_word_index == 0 {
         start_word_index.set(0);
     }

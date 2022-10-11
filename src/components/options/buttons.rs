@@ -5,7 +5,7 @@ use yew::prelude::*;
 
 // This does work, but it's kinda ugly
 // TODO:
-// Rework the entire behaviour of these functions
+// Rework the entire structure of these functions
 // Extract multiple buttons that share state into a single radio buttons component
 // Use templates
 // etc.

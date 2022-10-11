@@ -6,6 +6,7 @@ use stylist::{yew::styled_component, Style};
 use yew::{prelude::*, ContextProvider};
 
 pub mod components;
+pub mod fetch;
 pub mod global_state;
 
 #[styled_component(App)]
@@ -24,7 +25,6 @@ pub fn app() -> Html {
     html! {
         <ContextProvider<AppContext> context={ctx}>
             <div class={style}>
-            <Timer />
             <Options />
             <TypingContainer />
             </div>

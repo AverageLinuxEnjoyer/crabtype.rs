@@ -21,7 +21,7 @@ impl Rows for Vec<Vec<WordProps>> {
     fn from_state(state: &AppState, start_word_index: usize) -> Vec<Vec<WordProps>> {
         let mut letter_count = 0;
         let mut rows: Vec<Vec<WordProps>> = vec![Vec::new()];
-        for word in state.words.iter().skip(start_word_index) {
+        for word in state.words.borrow().iter().skip(start_word_index) {
             let word = word.to_props();
 
             if word.content.len() + letter_count >= state.letters_per_row {
@@ -35,7 +35,7 @@ impl Rows for Vec<Vec<WordProps>> {
 
             letter_count += word.content.len() + 1;
 
-            // guaranteed not to panic, rows has at least 1 elem inside (see line 23) 
+            // guaranteed not to panic, rows has at least 1 elem inside (see line 23)
             rows.last_mut().unwrap().push(word);
         }
 

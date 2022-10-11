@@ -9,7 +9,7 @@ use crate::{
         words_action::handle_words_action, write_action::handle_write_action,
     },
 };
-use std::rc::Rc;
+use std::{cell::RefCell, fmt, rc::Rc};
 use yew::prelude::*;
 
 pub type AppContext = UseReducerHandle<AppState>;
@@ -29,13 +29,20 @@ pub struct AppState {
     pub rows: usize,
     pub max_written_rows: usize,
 
-    // TODO: wrap this into a Rc<ReffCell<_>>
-    pub words: Vec<WordData>,
+    pub words: Rc<RefCell<Vec<WordData>>>,
+    pub loaded: bool,
+
     pub current_word_index: usize,
     pub current_letter_index: usize,
 
     pub countdown: usize,
     pub started: bool,
+}
+
+impl fmt::Display for AppState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "languages: {:?}\nselected_language:{}\n capitalization:{}\n punctuation:{}\ntimers:{:?}\nselected_timer:{}\ncurrent_word_index:{}\ncurrent_letter_index:{} countdown:{}\nstarted:{}\n", self.languages, self.selected_language, self.capitalization, self.punctuation, self.timers, self.selected_timer, self.current_word_index, self.current_letter_index, self.countdown, self.started  )
+    }
 }
 
 pub enum StateAction {
@@ -60,6 +67,8 @@ impl Reducible for AppState {
             selected_timer: self.selected_timer,
 
             words: self.words.clone(),
+            loaded: self.loaded,
+
             current_word_index: self.current_word_index,
             current_letter_index: self.current_letter_index,
 
@@ -105,14 +114,19 @@ impl Default for AppState {
             rows: 3,
             max_written_rows: 2,
 
-            words: String::from(include_str!("words.txt"))
-                .split(' ')
-                .map(|st| WordData {
-                    target: st.to_owned(),
-                    written: None,
-                })
-                .collect::<Vec<WordData>>()[0..60]
-                .to_vec(),
+            words: RefCell::new(
+                String::from(include_str!("words.txt"))
+                    .split(' ')
+                    .map(|st| WordData {
+                        target: st.to_owned(),
+                        written: None,
+                    })
+                    .collect::<Vec<WordData>>()[0..60]
+                    .to_vec(),
+            )
+            .into(),
+            loaded: true,
+
             current_word_index: 0,
             current_letter_index: 0,
 

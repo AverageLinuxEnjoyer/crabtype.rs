@@ -2,8 +2,7 @@ use crate::global_state::{
     state::{AppContext, StateAction},
     timer_action::TimerAction,
 };
-use gloo::{console::log, timers::callback::Interval};
-use std::rc::Rc;
+use gloo::timers::callback::Interval;
 use stylist::Style;
 use yew::prelude::*;
 
@@ -11,7 +10,7 @@ use yew::prelude::*;
 pub fn timer() -> Html {
     let style = Style::new(include_str!("style.css")).unwrap();
 
-    let state = use_context::<AppContext>().expect("No state context found");
+    let state = use_context::<AppContext>().expect("No app context found");
 
     let timer = use_state(|| Option::<Interval>::None);
 
