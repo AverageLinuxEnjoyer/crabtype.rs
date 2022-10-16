@@ -3,7 +3,7 @@ use super::super::timer::view::Timer;
 use super::super::words_container::view::WordsContainer;
 use crate::{
     components::typing::event_listener::use_key_listener_effect,
-    fetch::words::fetch_words,
+    fetch::words::{fetch_words, try_load_words},
     global_state::{
         state::{AppContext, StateAction},
         words_action::WordsAction,
@@ -19,17 +19,10 @@ pub fn typing_container() -> Html {
 
     let state = use_context::<AppContext>().expect("No state context found");
 
-    let fetched_words = use_async(async move { fetch_words("english_1k", true, true).await });
+    let state_clone = state.clone();
+    let fetched_words = use_async(async move { fetch_words(state_clone).await });
 
-    if fetched_words.loading {
-        state.dispatch(StateAction::WordsAction(WordsAction::SetLoaded(false)));
-    } else if fetched_words.data.is_some() && !state.loaded {
-        state.dispatch(StateAction::WordsAction(WordsAction::ResetWords(
-            fetched_words.data.as_ref().unwrap().clone(),
-        )));
-
-        state.dispatch(StateAction::WordsAction(WordsAction::SetLoaded(true)));
-    }
+    try_load_words(fetched_words.clone(), state.clone());
 
     let onclick = Callback::from(move |_| {
         fetched_words.run();

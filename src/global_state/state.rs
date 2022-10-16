@@ -16,7 +16,7 @@ pub type AppContext = UseReducerHandle<AppState>;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct AppState {
-    pub languages: Vec<&'static str>,
+    pub languages: Vec<String>,
     pub selected_language: usize,
 
     pub capitalization: bool,
@@ -39,6 +39,7 @@ pub struct AppState {
     pub started: bool,
 }
 
+// for debugging purposes
 impl fmt::Display for AppState {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "languages: {:?}\nselected_language:{}\n capitalization:{}\n punctuation:{}\ntimers:{:?}\nselected_timer:{}\ncurrent_word_index:{}\ncurrent_letter_index:{} countdown:{}\nstarted:{}\n", self.languages, self.selected_language, self.capitalization, self.punctuation, self.timers, self.selected_timer, self.current_word_index, self.current_letter_index, self.countdown, self.started  )
@@ -56,29 +57,7 @@ impl Reducible for AppState {
     type Action = StateAction;
 
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
-        let mut state = AppState {
-            languages: self.languages.clone(),
-            selected_language: self.selected_language,
-
-            capitalization: self.capitalization,
-            punctuation: self.punctuation,
-
-            timers: self.timers.clone(),
-            selected_timer: self.selected_timer,
-
-            words: self.words.clone(),
-            loaded: self.loaded,
-
-            current_word_index: self.current_word_index,
-            current_letter_index: self.current_letter_index,
-
-            letters_per_row: self.letters_per_row,
-            max_written_rows: self.max_written_rows,
-            rows: self.rows,
-
-            countdown: self.countdown,
-            started: self.started,
-        };
+        let mut state = self.as_ref().clone();
 
         use StateAction::*;
         match action {
@@ -101,7 +80,11 @@ impl AppState {
 impl Default for AppState {
     fn default() -> AppState {
         AppState {
-            languages: vec!["english_1k", "english_10k", "english_30k"],
+            languages: vec![
+                "english_1k".into(),
+                "english_10k".into(),
+                "english_30k".into(),
+            ],
             selected_language: 0,
 
             capitalization: false,

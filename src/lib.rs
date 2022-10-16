@@ -11,16 +11,8 @@ pub mod global_state;
 
 #[styled_component(App)]
 pub fn app() -> Html {
+    let style = Style::new(include_str!("style.css")).unwrap();
     let ctx = use_reducer(AppState::default);
-
-    let style = Style::new(
-        "
-        display: flex;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        flex-direction: column;",
-    )
-    .unwrap();
 
     html! {
         <ContextProvider<AppContext> context={ctx}>
