@@ -21,7 +21,7 @@ pub fn words_container(props: &ContainerProps) -> Html {
     let start_word_index = use_state(|| 0usize);
 
     // when words reset, state.current_word_index becomes 0 so we reset the start_word_index as well
-    if *start_word_index != 0 && props.state.current_word_index == 0 {
+    if *start_word_index != 0 && props.state.typing.current_word_index == 0 {
         start_word_index.set(0);
     }
 
@@ -30,7 +30,7 @@ pub fn words_container(props: &ContainerProps) -> Html {
     rows.mark_current_classes(&props.state, *start_word_index);
 
     if rows
-        .get(props.state.max_written_rows)
+        .get(props.state.structure.max_written_rows)
         .unwrap()
         .first_letter_current()
     {
@@ -43,7 +43,11 @@ pub fn words_container(props: &ContainerProps) -> Html {
 
     let html_rows = rows.to_html();
 
-    let container_width = Style::new(format!("width: {}ch;", props.state.letters_per_row)).unwrap();
+    let container_width = Style::new(format!(
+        "width: {}ch;",
+        props.state.structure.letters_per_row
+    ))
+    .unwrap();
 
     let style = Style::new(include_str!("style.css")).unwrap();
 

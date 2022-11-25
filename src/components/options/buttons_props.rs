@@ -6,7 +6,7 @@ use crate::global_state::{
 };
 
 pub fn get_language_props(state: UseReducerHandle<AppState>) -> (Vec<String>, Callback<usize>) {
-    let language_labels = state.languages.clone();
+    let language_labels = state.options.languages.clone();
     let language_onclick = Callback::from(move |selected| {
         state.dispatch(StateAction::OptionsAction(OptionsAction::SetLanguage(
             selected,
@@ -32,6 +32,7 @@ pub fn get_punctuation_props(state: UseReducerHandle<AppState>) -> Callback<bool
 
 pub fn get_timer_props(state: UseReducerHandle<AppState>) -> (Vec<String>, Callback<usize>) {
     let timer_labels = state
+        .options
         .timers
         .iter()
         .map(|timer| timer.to_string())

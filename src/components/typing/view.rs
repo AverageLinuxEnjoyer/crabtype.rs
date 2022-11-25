@@ -6,6 +6,7 @@ use crate::{
     fetch::words::{fetch_words, try_load_words},
     global_state::{
         state::{AppContext, StateAction},
+        typing_state::TypingStatus,
         words_action::WordsAction,
     },
 };
@@ -30,10 +31,19 @@ pub fn typing_container() -> Html {
 
     use_key_listener_effect(state.clone());
 
-    let loaded = if state.loaded { "loaded" } else { "loading" };
+    let status = match state.typing.status {
+        TypingStatus::Started => "started",
+        TypingStatus::Finished => "finished",
+        TypingStatus::NotStarted => "not-started",
+    };
+
+    let loaded = match state.typing.loaded {
+        true => "loaded",
+        false => "loading",
+    };
 
     html! {
-        <main class={classes!(style, loaded)}>
+        <main class={classes!(style, loaded, status)}>
             <Timer />
             <WordsContainer state={state.clone()} />
             <RestartButton {onclick} />

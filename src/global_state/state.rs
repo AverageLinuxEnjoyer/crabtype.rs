@@ -1,5 +1,10 @@
 use super::{
-    options_action::OptionsAction, timer_action::TimerAction, words_action::WordsAction,
+    options_action::OptionsAction,
+    options_state::OptionsState,
+    structure_state::StructureState,
+    timer_action::TimerAction,
+    typing_state::{TypingState, TypingStatus},
+    words_action::WordsAction,
     write_action::WriteAction,
 };
 use crate::{
@@ -16,33 +21,17 @@ pub type AppContext = UseReducerHandle<AppState>;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct AppState {
-    pub languages: Vec<String>,
-    pub selected_language: usize,
+    pub options: OptionsState,
 
-    pub capitalization: bool,
-    pub punctuation: bool,
+    pub structure: StructureState,
 
-    pub timers: Vec<usize>,
-    pub selected_timer: usize,
-
-    pub letters_per_row: usize,
-    pub rows: usize,
-    pub max_written_rows: usize,
-
-    pub words: Rc<RefCell<Vec<WordData>>>,
-    pub loaded: bool,
-
-    pub current_word_index: usize,
-    pub current_letter_index: usize,
-
-    pub countdown: usize,
-    pub started: bool,
+    pub typing: TypingState,
 }
 
 // for debugging purposes
 impl fmt::Display for AppState {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "languages: {:?}\nselected_language:{}\n capitalization:{}\n punctuation:{}\ntimers:{:?}\nselected_timer:{}\ncurrent_word_index:{}\ncurrent_letter_index:{} countdown:{}\nstarted:{}\n", self.languages, self.selected_language, self.capitalization, self.punctuation, self.timers, self.selected_timer, self.current_word_index, self.current_letter_index, self.countdown, self.started  )
+        write!(f, "languages: {:?}\nselected_language:{}\n capitalization:{}\n punctuation:{}\ntimers:{:?}\nselected_timer:{}\ncurrent_word_index:{}\ncurrent_letter_index:{} countdown:{}\ntyping_status:{:?}\n", self.options.languages, self.options.selected_language, self.options.capitalization, self.options.punctuation, self.options.timers, self.options.selected_timer, self.typing.current_word_index, self.typing.current_letter_index, self.typing.countdown, self.typing.status  )
     }
 }
 
@@ -80,41 +69,47 @@ impl AppState {
 impl Default for AppState {
     fn default() -> AppState {
         AppState {
-            languages: vec![
-                "english_1k".into(),
-                "english_10k".into(),
-                "english_30k".into(),
-            ],
-            selected_language: 0,
+            options: OptionsState {
+                languages: vec![
+                    "english_1k".into(),
+                    "english_10k".into(),
+                    "english_30k".into(),
+                ],
+                selected_language: 0,
 
-            capitalization: false,
-            punctuation: false,
+                capitalization: false,
+                punctuation: false,
 
-            timers: vec![15, 30, 60, 120],
-            selected_timer: 1,
+                timers: vec![15, 30, 60, 120],
+                selected_timer: 1,
+            },
 
-            letters_per_row: 60,
-            rows: 3,
-            max_written_rows: 2,
+            structure: StructureState {
+                letters_per_row: 60,
+                rows: 3,
+                max_written_rows: 2,
+            },
 
-            words: RefCell::new(
-                String::from(include_str!("words.txt"))
-                    .split(' ')
-                    .map(|st| WordData {
-                        target: st.to_owned(),
-                        written: None,
-                    })
-                    .collect::<Vec<WordData>>()[0..60]
-                    .to_vec(),
-            )
-            .into(),
-            loaded: true,
+            typing: TypingState {
+                words: RefCell::new(
+                    String::from(include_str!("words.txt"))
+                        .split(' ')
+                        .map(|st| WordData {
+                            target: st.to_owned(),
+                            written: None,
+                        })
+                        .collect::<Vec<WordData>>()[0..60]
+                        .to_vec(),
+                )
+                .into(),
+                loaded: true,
 
-            current_word_index: 0,
-            current_letter_index: 0,
+                current_word_index: 0,
+                current_letter_index: 0,
 
-            countdown: 30,
-            started: false,
+                countdown: 30,
+                status: TypingStatus::NotStarted,
+            },
         }
     }
 }

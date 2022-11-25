@@ -1,5 +1,6 @@
 use crate::global_state::state::AppState;
 use crate::global_state::timer_action::TimerAction;
+use crate::global_state::typing_state::TypingStatus;
 use crate::global_state::{state::StateAction, write_action::WriteAction};
 use gloo::console::log;
 use gloo::events::EventListener;
@@ -12,9 +13,9 @@ pub fn use_key_listener_effect(state: UseReducerHandle<AppState>) {
 
         let listener = EventListener::new(&document, "keydown", move |event| {
             let event = event.dyn_ref::<web_sys::KeyboardEvent>().unwrap_throw();
-            log!(state.started);
+            log!(format!("{:?}", state.typing.status));
 
-            if state.countdown != 0 {
+            if state.typing.countdown != 0 {
                 if event.key() == "Backspace" {
                     state.dispatch(StateAction::WriteAction(WriteAction::Backspace));
                 } else if event.key() == "???" {
@@ -23,7 +24,7 @@ pub fn use_key_listener_effect(state: UseReducerHandle<AppState>) {
                 } else if event.key() == " " {
                     state.dispatch(StateAction::WriteAction(WriteAction::Space));
                 } else if event.key().len() == 1 {
-                    if !state.started {
+                    if state.typing.status == TypingStatus::NotStarted {
                         state.dispatch(StateAction::TimerAction(TimerAction::StartTimer));
                     }
 

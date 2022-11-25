@@ -1,6 +1,7 @@
 use crate::global_state::{
     state::{AppContext, StateAction},
     timer_action::TimerAction,
+    typing_state::TypingStatus,
 };
 use gloo::timers::callback::Interval;
 use stylist::Style;
@@ -17,14 +18,16 @@ pub fn timer() -> Html {
     let state_clone = state.clone();
 
     match *timer {
-        None if state_clone.started => timer.set(Some(Interval::new(1000, move || {
-            state_clone.dispatch(StateAction::TimerAction(TimerAction::DecrementTimer))
-        }))),
-        Some(_) if !state_clone.started => timer.set(None),
+        None if state_clone.typing.status == TypingStatus::Started => {
+            timer.set(Some(Interval::new(1000, move || {
+                state_clone.dispatch(StateAction::TimerAction(TimerAction::DecrementTimer))
+            })))
+        }
+        Some(_) if state_clone.typing.status != TypingStatus::Started => timer.set(None),
         _ => (),
     }
 
     html! {
-        <h1 class={style}> {state.countdown} </h1>
+        <h1 class={style}> {state.typing.countdown} </h1>
     }
 }

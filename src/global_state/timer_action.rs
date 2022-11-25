@@ -1,4 +1,5 @@
 use super::state::AppState;
+use crate::global_state::typing_state::TypingStatus;
 use gloo::{console::log, timers::callback::Interval};
 
 pub enum TimerAction {
@@ -11,14 +12,14 @@ pub fn handle_timer_action(action: TimerAction, state: &mut AppState) {
 
     match action {
         DecrementTimer => {
-            if state.countdown > 0 {
-                state.countdown -= 1;
+            if state.typing.countdown > 0 {
+                state.typing.countdown -= 1;
             }
 
-            if state.countdown == 0 {
-                state.started = false;
+            if state.typing.countdown == 0 {
+                state.typing.status = TypingStatus::Finished;
             }
         }
-        StartTimer => state.started = true,
+        StartTimer => state.typing.status = TypingStatus::Started,
     }
 }

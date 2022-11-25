@@ -21,11 +21,11 @@ impl Rows for Vec<Vec<WordProps>> {
     fn from_state(state: &AppState, start_word_index: usize) -> Vec<Vec<WordProps>> {
         let mut letter_count = 0;
         let mut rows: Vec<Vec<WordProps>> = vec![Vec::new()];
-        for word in state.words.borrow().iter().skip(start_word_index) {
+        for word in state.typing.words.borrow().iter().skip(start_word_index) {
             let word = word.to_props();
 
-            if word.content.len() + letter_count >= state.letters_per_row {
-                if rows.len() == state.rows {
+            if word.content.len() + letter_count >= state.structure.letters_per_row {
+                if rows.len() == state.structure.rows {
                     break;
                 } else {
                     rows.push(Vec::new());
@@ -46,16 +46,16 @@ impl Rows for Vec<Vec<WordProps>> {
         let mut word_index = start_word_index;
         'outer: for row in self.iter_mut() {
             for word in row.iter_mut() {
-                if word_index == state.current_word_index {
+                if word_index == state.typing.current_word_index {
                     word.class = WordClass::Current;
 
                     for (letter_index, letter) in word.content.iter_mut().enumerate() {
-                        if letter_index == state.current_letter_index {
+                        if letter_index == state.typing.current_letter_index {
                             letter.class = LetterClass::Current;
                         }
                     }
 
-                    if state.current_letter_index == word.content.len() {
+                    if state.typing.current_letter_index == word.content.len() {
                         word.class = WordClass::LastLetter;
                     }
 

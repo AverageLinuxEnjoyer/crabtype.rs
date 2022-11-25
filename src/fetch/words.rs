@@ -9,12 +9,12 @@ use crate::global_state::{
 };
 
 pub async fn fetch_words(state: UseReducerHandle<AppState>) -> Result<Vec<String>, ()> {
-    let language = state.languages[state.selected_language].clone();
-    let capitalization = state.capitalization;
-    let punctuation = state.punctuation;
+    let language = state.options.languages[state.options.selected_language].clone();
+    let capitalization = state.options.capitalization;
+    let punctuation = state.options.punctuation;
 
     // enough words for 240 wpm
-    let count = state.timers[state.selected_timer] * 3;
+    let count = state.options.timers[state.options.selected_timer] * 4;
 
     let body = format!(
         "{{
@@ -54,7 +54,7 @@ pub fn try_load_words(
 ) {
     if fetched_words.loading {
         state.dispatch(StateAction::WordsAction(WordsAction::SetLoaded(false)));
-    } else if fetched_words.data.is_some() && !state.loaded {
+    } else if fetched_words.data.is_some() && !state.typing.loaded {
         state.dispatch(StateAction::WordsAction(WordsAction::ResetWords(
             fetched_words.data.as_ref().unwrap().clone(),
         )));
